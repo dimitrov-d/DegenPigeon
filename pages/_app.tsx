@@ -11,10 +11,10 @@ export default function App({ Component, pageProps }: AppProps) {
     <AuthProvider>
       <ConnectWalletProvider {...pageProps}>
         <PolkadotExtensionContextProvider>
-          <ToastContainer theme='dark' />
           <Component {...pageProps} />
         </PolkadotExtensionContextProvider>
       </ConnectWalletProvider>
+      {/* <ToastContainer theme='dark' /> */}
     </AuthProvider>
   );
 }

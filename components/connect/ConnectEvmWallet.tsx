@@ -1,6 +1,5 @@
 import React from 'react';
 import { useConnect } from 'wagmi';
-import Image from 'next/image';
 
 function ConnectEvmWallet() {
   const { connect, connectors } = useConnect();
@@ -36,7 +35,7 @@ function ConnectEvmWallet() {
             onClick={() => handleConnect(wallet.connector)}
             key={wallet.connector.uid}
           >
-            <Image
+            <img
               src={wallet.image}
               alt={wallet.name}
               className='mr-2 w-5 h-5'

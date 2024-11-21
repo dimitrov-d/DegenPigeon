@@ -26,6 +26,8 @@ const NormalUpload: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.debug(isAuthenticated);
+
     if (!isAuthenticated && openConnectModal) {
       openConnectModal();
       return;
@@ -83,7 +85,7 @@ const NormalUpload: React.FC = () => {
         <div className='space-y-1'>
           <FileUploader handleChange={handleChange} name='file'>
             <div className='relative w-full p-4 pb-8 text-center text-grey dashed-border'>
-              <Image
+              <img
                 src='/images/cloud-add.svg'
                 alt='Degen pigeon upload'
                 width={39}

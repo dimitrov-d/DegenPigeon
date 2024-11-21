@@ -12,7 +12,8 @@ import { recoverMessageAddress } from 'viem';
 
 const ConnectButton = () => {
   const [showModal, setShowModal] = useState(false);
-  const { isAuthenticated, logOut, verifyWallet } = useAuth();
+  const { isAuthenticated, logOut, verifyWallet, setIsAuthenticated } =
+    useAuth();
 
   const { disconnect } = useDisconnect();
   const { address, isConnected, chainId } = useAccount();
@@ -41,6 +42,7 @@ const ConnectButton = () => {
     (async () => {
       if (signature) {
         const verified = await verifyWallet({ message, signature });
+        setIsAuthenticated(verified);
 
         if (verified) {
           const nonce = await getNonce();
@@ -83,8 +85,9 @@ const ConnectButton = () => {
           Connect Wallet
         </button>
       )}
-
-      <ModalWallet isOpen={showModal} onClose={() => setShowModal(false)} />
+      {!isAuthenticated && (
+        <ModalWallet isOpen={showModal} onClose={() => setShowModal(false)} />
+      )}
     </>
   );
 };

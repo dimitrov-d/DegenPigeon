@@ -22,6 +22,7 @@ export const PolkadotExtensionContextProvider = ({
   children: ReactNode;
 }) => {
   const polkadotExtension = usePolkadotExtension();
+  console.debug(polkadotExtension);
 
   return (
     <PolkadotExtensionContext.Provider value={polkadotExtension}>

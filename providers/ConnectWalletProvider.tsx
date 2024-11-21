@@ -64,10 +64,7 @@ const ConnectWalletProvider = ({
       },
 
       signOut: async () => {
-        // setAuthStatus('unauthenticated');
-        // setIsAuthenticated(false);
-        // await fetch('/api/auth/logout');
-        logOut();
+        // logOut();
       },
     });
   }, []);
@@ -75,14 +72,14 @@ const ConnectWalletProvider = ({
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitAuthenticationProvider
+        {/* <RainbowKitAuthenticationProvider
           adapter={authAdapter}
           status={authStatus}
-        >
-          <RainbowKitProvider theme={darkTheme()} modalSize='compact'>
-            {children}
-          </RainbowKitProvider>
-        </RainbowKitAuthenticationProvider>
+        > */}
+        <RainbowKitProvider theme={darkTheme()} modalSize='compact'>
+          {children}
+        </RainbowKitProvider>
+        {/* </RainbowKitAuthenticationProvider> */}
       </QueryClientProvider>
     </WagmiProvider>
   );

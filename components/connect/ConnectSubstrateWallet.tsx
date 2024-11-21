@@ -3,7 +3,6 @@ import SubstrateWallet from './SubstrateWallet';
 import { usePolkadotExtensionWithContext } from '@/context/polkadotExtensionContext';
 import { getWallets } from '@/hooks/useSubstrateWallet';
 import Btn from '../Btn';
-import Image from 'next/image';
 
 export default function ConnectSubstrateWallet() {
   const [error, setError] = useState<string | undefined>(undefined);
@@ -85,7 +84,7 @@ export default function ConnectSubstrateWallet() {
             >
               <span className='flex items-center text-xs'>
                 {wallet.image ? (
-                  <Image
+                  <img
                     src={wallet.image}
                     alt={wallet.extensionName}
                     className='mr-2 w-5 h-5'

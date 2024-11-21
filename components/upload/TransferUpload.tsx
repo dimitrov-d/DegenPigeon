@@ -92,8 +92,8 @@ const TransferUploadCard: React.FC = () => {
       <form className='space-y-4' onSubmit={handleSubmit}>
         <div className='space-y-1'>
           <FileUploader handleChange={handleChange} name='file'>
-            <div className='relative w-full p-4 pb-8 text-center text-grey dashed-border'>
-              <Image
+            <span className='relative block w-full p-4 pb-8 text-center text-grey dashed-border'>
+              <img
                 src='/images/cloud-add.svg'
                 alt='Degen pigeon upload'
                 width={39}
@@ -107,7 +107,7 @@ const TransferUploadCard: React.FC = () => {
                   Drag & drop a file to upload.
                 </span>
               )}
-            </div>
+            </span>
           </FileUploader>
           <div className='text-center pt-6 mb-8'>
             <input
@@ -117,14 +117,14 @@ const TransferUploadCard: React.FC = () => {
               ref={fileInputRef}
               id='btnFile'
             />
-            <label htmlFor='btnFile' className='button-primary !rounded-full'>
+            {/* <label htmlFor='btnFile' className='button-primary !rounded-full'>
               Browse file
-            </label>
+            </label> */}
           </div>
         </div>
 
         <div className='space-y-1'>
-          <label className=''>Enter the mail</label>
+          {/* <label>Enter the mail</label> */}
           <input
             type='email'
             className='w-full'
