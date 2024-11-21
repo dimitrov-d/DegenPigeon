@@ -1,16 +1,17 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
+export enum ActionMode {
+  TRANSFER = 'Transfer Mode',
+  STORAGE = 'Storage Mode',
+  HISTORY = 'History',
+}
 interface AuthContextType {
   email: string | null;
   setEmail: (email: string | null) => void;
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
-  privateMode: boolean;
-  setPrivateMode: (privateMode: boolean) => void;
-  storageMode: boolean;
-  setStorageMode: (storageMode: boolean) => void;
-  transferMode: boolean;  
-  setTransferMode: (transferMode: boolean) => void;
+  actionMode: string;
+  setActionMode: (actionMode: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,9 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [privateMode, setPrivateMode] = useState<boolean>(false);
-  const [storageMode, setStorageMode] = useState<boolean>(false);
-  const [transferMode, setTransferMode] = useState<boolean>(true);
+  const [actionMode, setActionMode] = useState<string>(ActionMode.TRANSFER);
 
   return (
     <AuthContext.Provider
@@ -29,12 +28,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setEmail,
         isAuthenticated,
         setIsAuthenticated,
-        privateMode,
-        setPrivateMode,
-        storageMode,
-        setStorageMode,
-        transferMode,
-        setTransferMode,
+        actionMode,
+        setActionMode,
       }}
     >
       {children}

@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { ClipLoader } from 'react-spinners';
-import { IoCloudUploadOutline } from 'react-icons/io5';
 import UploadSuccessModal from '../modals/UploadSuccessModal';
-import helpers from "@/utils/helpers";
-import {toast} from "react-toastify";
-import {useAccount} from "wagmi";
-import {useConnectModal} from "@rainbow-me/rainbowkit";
-
+import helpers from '@/utils/helpers';
+import { toast } from 'react-toastify';
+import { useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { FileUploader } from 'react-drag-drop-files';
 
 const NormalUpload: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -17,12 +17,10 @@ const NormalUpload: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
   const [uploadedFileLink, setUploadedFileLink] = useState('');
-  const {openConnectModal} = useConnectModal();
+  const { openConnectModal } = useConnectModal();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
+  const handleChange = (file: File) => {
+    setFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +37,7 @@ const NormalUpload: React.FC = () => {
     }
 
     setLoading(true);
-    const buffer = await helpers.getFileBuffer(file) as Buffer;
+    const buffer = (await helpers.getFileBuffer(file)) as Buffer;
     const base64Content = buffer.toString('base64');
 
     try {
@@ -51,17 +49,17 @@ const NormalUpload: React.FC = () => {
         body: JSON.stringify({
           fileName: file.name,
           contentType: file.type,
-          content: base64Content
+          content: base64Content,
         }),
       });
 
-        if (!response.ok) {
-            throw new Error('An error occurred.');
-        }
+      if (!response.ok) {
+        throw new Error('An error occurred.');
+      }
 
       const data = await response.json();
       // @ts-ignore
-      if(!data.ipfs_url) {
+      if (!data.ipfs_url) {
         throw new Error('File upload failed.');
       }
       // Reset form
@@ -80,53 +78,35 @@ const NormalUpload: React.FC = () => {
   };
 
   return (
-    <div className="upload-card-gradient mt-0 border-gray-500 border text-black p-6 rounded-lg shadow-lg  mx-auto z-[1000] transition-all duration-500 -mt-[120px]">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
-          <div className="button-primary text-white rounded-full p-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 4v16m8-8H4"
+    <div className=''>
+      <form className='space-y-4' onSubmit={handleSubmit}>
+        <div className='space-y-1'>
+          <FileUploader handleChange={handleChange} name='file'>
+            <div className='relative w-full p-4 pb-8 text-center text-grey dashed-border'>
+              <Image
+                src='/images/cloud-add.svg'
+                alt='Degen pigeon upload'
+                width={39}
+                height={39}
+                className='mx-auto mb-4 text-text-light'
               />
-            </svg>
-          </div>
-
-          <span className="font-semibold text-gray-100">Upload files</span>
+              {file ? (
+                <strong className='text-[13px]'>{file.name}</strong>
+              ) : (
+                <span className='text-[13px] font-normal'>
+                  Drag & drop a file to upload.
+                </span>
+              )}
+            </div>
+          </FileUploader>
         </div>
-      </div>
-      <div className="bg-[#03001436] p-2 rounded-lg mb-4 text-center">
-        <p className="text-xs text-white">
-          Up to 2 GB free{' '}
-          <span className="text-purple-300">⚡ Increase limit</span>
-        </p>
-      </div>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="space-y-1 flex flex-col items-center border-2 border-dashed border-gray-300 p-8 rounded-lg">
-          <IoCloudUploadOutline className="h-12 w-12 text-gray-400" />
-          <p className="text-gray-500">Upload your file</p>
-          <input
-            type="file"
-            className="w-full border border-gray-500 rounded-md p-2 bg-[#03001436] text-gray-300 mt-4"
-            onChange={handleFileChange}
-            ref={fileInputRef}
-          />
-        </div>
-        <div className="flex justify-between items-center">
+        <div className='flex justify-between items-center pt-2'>
           <button
-            type="submit"
-            className={`font-semibold px-6 py-2 rounded-full transition-colors w-[120px] button-primary text-white cursor-pointer`}
+            type='submit'
+            className='button-primary w-full'
             disabled={loading}
           >
-            {loading ? <ClipLoader color="white" size={20} /> : 'Upload'}
+            {loading ? <ClipLoader color='white' size={20} /> : 'Upload'}
           </button>
         </div>
       </form>

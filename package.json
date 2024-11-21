@@ -11,6 +11,7 @@
   "dependencies": {
     "@apillon/sdk": "^3.3.0",
     "@headlessui/react": "^2.0.4",
+    "@polkadot/extension-dapp": "^0.56.2",
     "@rainbow-me/rainbowkit": "^2.1.7",
     "@react-three/drei": "^9.105.6",
     "@react-three/fiber": "^8.17.10",
@@ -25,11 +26,11 @@
     "nodemailer": "^6.9.13",
     "react": "^18",
     "react-dom": "^18",
+    "react-drag-drop-files": "^2.4.0",
     "react-icons": "^5.2.1",
     "react-spinners": "^0.13.8",
     "react-toastify": "^10.0.5",
     "resend": "^3.2.0",
-    "three": "^0.169.0",
     "truncate-eth-address": "^1.0.2",
     "viem": "^2.21.17",
     "wagmi": "^2.12.16"
@@ -41,7 +42,6 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
-    "maath": "^0.10.4",
     "postcss": "^8",
     "react-intersection-observer": "^9.5.2",
     "tailwindcss": "^3.4.1",
