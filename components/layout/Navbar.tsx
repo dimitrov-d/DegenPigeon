@@ -27,7 +27,6 @@ const Navbar = () => {
         <div></div>
 
         <div className='relative'>
-          {isAuthenticated ? '1' : '0'}_{isConnected ? '1' : '0'} -{address}
           {isAuthenticated && isConnected && address ? (
             <button
               className='button-primary h-12 min-w-80'

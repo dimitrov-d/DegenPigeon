@@ -70,7 +70,7 @@ const Transfers: React.FC = () => {
           File storage and history
         </h2>
 
-        <div className='mt-8'>
+        <div className='mt-8 max-h-[70dvh] overflow-auto'>
           {loading && (
             <div className='flex justify-center items-center'>
               <li className='flex items-center'>
