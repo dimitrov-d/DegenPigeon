@@ -21,15 +21,12 @@ const FileCard: React.FC<FileCardProps> = ({ title, description, link }) => {
   };
 
   return (
-    <div className="mt-2 p-4 border rounded-lg flex justify-between items-center">
+    <div className='mt-2 p-4 border border-grey bg-bg-light rounded-lg flex justify-between items-end text-grey w-full'>
       <div>
-        <p className="font-semibold">{title}</p>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className='font-bold text-xs mb-1'>{title}</p>
+        <p className='text-[10px]'>{description}</p>
       </div>
-      <button
-        onClick={handleDownload}
-        className="text-purple-600 font-semibold"
-      >
+      <button onClick={handleDownload} className='text-[10px] font-bold'>
         Download
       </button>
     </div>
