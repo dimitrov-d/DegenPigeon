@@ -19,6 +19,12 @@ const NormalUpload: React.FC = () => {
   const [uploadedFileLink, setUploadedFileLink] = useState('');
   const { openConnectModal } = useConnectModal();
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e);
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
   const handleChange = (file: File) => {
     setFile(file);
   };
@@ -41,6 +47,7 @@ const NormalUpload: React.FC = () => {
     const base64Content = buffer.toString('base64');
 
     try {
+      setShowModal(true);
       const response = await fetch('/api/apillon/upload-files', {
         method: 'POST',
         headers: {
@@ -68,7 +75,6 @@ const NormalUpload: React.FC = () => {
         fileInputRef.current.value = '';
       }
       setUploadedFileLink(data.ipfs_url);
-      setShowModal(true);
     } catch (error) {
       console.error('Error during upload process:', error);
       toast.error('An error occurred. Please try again.');
@@ -99,6 +105,18 @@ const NormalUpload: React.FC = () => {
               )}
             </div>
           </FileUploader>
+          <div className='text-center pt-6 mb-8'>
+            <input
+              type='file'
+              className='absolute invisible -z-10'
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              id='btnFile'
+            />
+            <label htmlFor='btnFile' className='button-primary !rounded-full'>
+              Browse file
+            </label>
+          </div>
         </div>
         <div className='flex justify-between items-center pt-2'>
           <button
@@ -112,7 +130,10 @@ const NormalUpload: React.FC = () => {
       </form>
       <UploadSuccessModal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={() => {
+          setShowModal(false);
+          setUploadedFileLink('');
+        }}
         fileLink={uploadedFileLink}
       />
     </div>

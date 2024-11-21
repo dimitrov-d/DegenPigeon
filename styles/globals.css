@@ -92,3 +92,35 @@ input {
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
 }
+
+/** Spinner */
+.spinner {
+  animation: rotate 2s linear infinite;
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: none;
+}
+.path {
+  stroke-dasharray: 8, 10;
+  animation: dash 8s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dashoffset: -124;
+  }
+}
