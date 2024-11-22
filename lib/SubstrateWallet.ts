@@ -1,49 +1,47 @@
-// Types
-export type SubstrateWalletInfo = {
-  extensionName: string;
-  title: string;
-  installUrl: {
-    firefox?: string;
-    default: string;
-    android?: string;
-    ios?: string;
-  };
-  icon: string;
-  image?: string;
-};
+import type { InjectedWindow } from '@polkadot/extension-inject/types';
+import { DotsamaWallet } from './DotSamaWallet';
+import { WalletInfo } from './types/wallet';
 
 // Predefined wallets
-export const SUBSTRATE_WALLETS: SubstrateWalletInfo[] = [
+const PREDEFINED_WALLETS: WalletInfo[] = [
   {
     extensionName: 'polkadot-js',
     title: 'Polkadot{.js}',
     installUrl: {
-      firefox:
-        'https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/',
-      default:
-        'https://chrome.google.com/webstore/detail/polkadot%7Bjs%7D-extension/mopnmbcafieddcagagdcbnhejhlodfdd',
+      firefox: 'https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/',
+      default: 'https://chrome.google.com/webstore/detail/polkadot%7Bjs%7D-extension/mopnmbcafieddcagagdcbnhejhlodfdd',
     },
-    icon: '/images/wallet/polkadot.svg',
+    image: '/images/wallet/polkadot.svg',
   },
   {
     extensionName: 'subwallet-js',
     title: 'SubWallet',
     installUrl: {
       firefox: 'https://addons.mozilla.org/en-US/firefox/addon/subwallet/',
-      default:
-        'https://chrome.google.com/webstore/detail/subwallet/onhogfjeacnfoofkfgppdlbmlmnplgbn',
+      default: 'https://chrome.google.com/webstore/detail/subwallet/onhogfjeacnfoofkfgppdlbmlmnplgbn',
     },
-    icon: '/images/wallet/subwallet.svg',
+    image: '/images/wallet/subwallet.svg',
   },
   {
     extensionName: 'talisman',
     title: 'Talisman',
     installUrl: {
-      firefox:
-        'https://addons.mozilla.org/en-US/firefox/addon/talisman-wallet-extension/',
-      default:
-        'https://chrome.google.com/webstore/detail/talisman-wallet/fijngjgcjhjmmpcmkeiomlglpeiijkld',
+      firefox: 'https://addons.mozilla.org/en-US/firefox/addon/talisman-wallet-extension/',
+      default: 'https://chrome.google.com/webstore/detail/talisman-wallet/fijngjgcjhjmmpcmkeiomlglpeiijkld',
     },
-    icon: '/images/wallet/talisman.svg',
+    image: '/images/wallet/talisman.svg',
   },
 ];
+
+/**
+ * Get all wallets
+ */
+export function getWallets(): DotsamaWallet[] {
+  return PREDEFINED_WALLETS.map((wallet) => new DotsamaWallet(wallet));
+}
+
+export function truncateWallet(source: string, partLength: number = 4): string {
+  return source.length > 9
+    ? source.slice(0, partLength) + '…' + source.slice(source.length - partLength, source.length)
+    : source;
+}

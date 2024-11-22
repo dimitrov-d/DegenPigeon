@@ -1,92 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
 import type {
   InjectedAccount,
   InjectedExtension,
   InjectedMetadata,
   InjectedProvider,
   InjectedWindow,
-  Unsubcall,
 } from '@polkadot/extension-inject/types';
 import type { Signer } from '@polkadot/types/types';
+import { SubscriptionFn, WalletAccount, WalletInfo } from './types/wallet';
 
-const DAPP_NAME = 'Apillon SubWallet Connect';
+const DAPP_NAME = 'DegenPigeon Wallet Connect';
 
-type SubscriptionFn = (
-  accounts: WalletAccount[] | undefined
-) => void | Promise<void>;
-type WalletDeviceType = 'desktop' | 'mobile';
-
-interface WalletAccount {
-  address: string;
-  source: string;
-  name?: string;
-  wallet: Wallet;
-  signer: Signer;
-}
-
-interface WalletInfo {
-  type: WalletDeviceType;
+export class DotsamaWallet {
   extensionName: string;
   title: string;
   installUrl: Record<string, string>;
-  icon?: string;
-  image?: string;
-}
-
-interface WalletMethods {
-  enable: () => Promise<unknown>;
-
-  subscribeAccounts: (callback: SubscriptionFn) => Promise<Unsubcall | null>;
-
-  getAccounts: () => Promise<WalletAccount[] | null>;
-}
-
-interface WalletContextInterface {
-  wallet?: Wallet;
-  accounts: WalletAccount[];
-  setWallet: (wallet: Wallet | undefined) => void;
-}
-
-interface OpenSelectWalletInterface {
-  isOpen: boolean;
-  open: () => void;
-  close: () => void;
-}
-interface WalletAccount {
-  address: string;
-  source: string;
-  name?: string;
-  wallet: Wallet;
-  signer: Signer;
-}
-
-interface WalletInfo {
-  type: WalletDeviceType;
-  extensionName: string;
-  title: string;
-  installUrl: Record<string, string>;
-  icon?: string;
-  image?: string;
-}
-
-interface Wallet extends WalletInfo, WalletMethods {
-  installed: boolean | undefined;
-
-  extension: InjectedExtension | undefined;
-
-  signer: Signer | undefined;
-
-  metadata: InjectedMetadata | undefined;
-
-  provider: InjectedProvider | undefined;
-}
-
-export class DotSamaWallet {
-  type: WalletDeviceType;
-  extensionName: string;
-  title: string;
-  installUrl: Record<string, string>;
-  icon: string;
   image: string;
 
   private _extension: InjectedExtension | undefined;
@@ -94,19 +21,10 @@ export class DotSamaWallet {
   private _metadata: InjectedMetadata | undefined;
   private _provider: InjectedProvider | undefined;
 
-  constructor({
-    type,
-    extensionName,
-    installUrl,
-    icon,
-    image,
-    title,
-  }: WalletInfo) {
-    this.type = type;
+  constructor({ extensionName, installUrl, image, title }: WalletInfo) {
     this.extensionName = extensionName;
     this.title = title;
     this.installUrl = installUrl;
-    this.icon = icon || '';
     this.image = image || '';
   }
 
@@ -128,11 +46,9 @@ export class DotSamaWallet {
 
   get installed() {
     const injectedWindow = window as Window & InjectedWindow;
-    const injectedExtension =
-      injectedWindow?.injectedWeb3?.[this.extensionName];
-    const novaWalletExtension = injectedWindow?.walletExtension?.isNovaWallet;
+    const injectedExtension = injectedWindow?.injectedWeb3?.[this.extensionName];
 
-    return !!injectedExtension || !!novaWalletExtension;
+    return !!injectedExtension;
   }
 
   get rawExtension() {
@@ -171,7 +87,7 @@ export class DotSamaWallet {
       source: this._extension?.name as string,
       wallet: this,
       signer: this._extension?.signer,
-    } as WalletAccount;
+    };
   };
 
   subscribeAccounts = async (callback: SubscriptionFn) => {
@@ -196,42 +112,3 @@ export class DotSamaWallet {
     return accounts.map(this.generateWalletAccount);
   };
 }
-
-// React Hook for Wallet
-
-export const useDotSamaWallet = (walletInfo: WalletInfo) => {
-  const [wallet, setWallet] = useState<DotSamaWallet | null>(null);
-  const [accounts, setAccounts] = useState<WalletAccount[] | null>(null);
-
-  useEffect(() => {
-    const newWallet = new DotSamaWallet(walletInfo);
-    setWallet(newWallet);
-  }, [walletInfo]);
-
-  const enableWallet = useCallback(async () => {
-    if (!wallet) return;
-    await wallet.enable();
-  }, [wallet]);
-
-  const fetchAccounts = useCallback(async () => {
-    if (!wallet) return;
-    const fetchedAccounts = await wallet.getAccounts();
-    setAccounts(fetchedAccounts);
-  }, [wallet]);
-
-  const subscribeToAccounts = useCallback(
-    (callback: SubscriptionFn) => {
-      if (!wallet) return;
-      wallet.subscribeAccounts(callback);
-    },
-    [wallet]
-  );
-
-  return {
-    wallet,
-    accounts,
-    enableWallet,
-    fetchAccounts,
-    subscribeToAccounts,
-  };
-};

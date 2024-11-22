@@ -27,13 +27,13 @@ const ConnectWalletProvider = ({
   children: React.ReactNode;
   pageProps: AppProps['pageProps'];
 }) => {
-  const { authStatus, fetchAuthStatus, verifyWallet, logOut } = useAuth();
+  const { authStatus, isAuthenticated, getNonce, fetchAuthStatus, verifyWallet, logOut } = useAuth();
 
   useEffect(() => {
     fetchAuthStatus();
 
-    window.addEventListener('focus', fetchAuthStatus);
-    return () => window.removeEventListener('focus', fetchAuthStatus);
+    // window.addEventListener('focus', fetchAuthStatus);
+    // return () => window.removeEventListener('focus', fetchAuthStatus);
   }, []);
 
   const authAdapter = useMemo(() => {
@@ -41,10 +41,7 @@ const ConnectWalletProvider = ({
       getMessageBody<Message>(args: { message: Message }): string {
         return args.message as string;
       },
-      getNonce: async () => {
-        const response = await fetch('/api/auth/nonce');
-        return await response.text();
-      },
+      getNonce: async () => await getNonce(),
 
       createMessage: ({ nonce, address, chainId }) => {
         return createSiweMessage({
@@ -59,12 +56,12 @@ const ConnectWalletProvider = ({
         });
       },
 
-      verify: async ({ message, signature }: VerifyArgs) => {
-        verifyWallet({ message, signature });
-      },
+      verify: async ({ message, signature }: VerifyArgs) => verifyWallet({ message, signature }),
 
       signOut: async () => {
-        // logOut();
+        if (isAuthenticated) {
+          logOut();
+        }
       },
     });
   }, []);
@@ -72,14 +69,11 @@ const ConnectWalletProvider = ({
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        {/* <RainbowKitAuthenticationProvider
-          adapter={authAdapter}
-          status={authStatus}
-        > */}
-        <RainbowKitProvider theme={darkTheme()} modalSize='compact'>
-          {children}
-        </RainbowKitProvider>
-        {/* </RainbowKitAuthenticationProvider> */}
+        <RainbowKitAuthenticationProvider adapter={authAdapter} status={authStatus}>
+          <RainbowKitProvider theme={darkTheme()} modalSize='compact'>
+            {children}
+          </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

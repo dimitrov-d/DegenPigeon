@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import Image from 'next/image';
 import { FileUploader } from 'react-drag-drop-files';
 import { useAuth } from '@/context/AuthContext';
 import { ClipLoader } from 'react-spinners';
@@ -7,18 +6,20 @@ import { toast } from 'react-toastify';
 import SuccessModal from '../modals/SuccessModal';
 import helpers from '@/utils/helpers';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
 
 const TransferUploadCard: React.FC = () => {
-  const { isAuthenticated } = useAuth();
-  const [file, setFile] = useState<File | null>(null);
-  const [recipientEmail, setRecipientEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isAuthenticated, walletAddress } = useAuth();
+  const { address: ethAddress } = useAccount();
   const { openConnectModal } = useConnectModal();
 
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
     }
@@ -52,6 +53,7 @@ const TransferUploadCard: React.FC = () => {
           fileName: file.name,
           contentType: file.type,
           content: base64Content,
+          walletAddress: ethAddress || walletAddress,
         }),
       });
 
@@ -103,9 +105,7 @@ const TransferUploadCard: React.FC = () => {
               {file ? (
                 <strong className='text-[13px]'>{file.name}</strong>
               ) : (
-                <span className='text-[13px] font-normal'>
-                  Drag & drop a file to upload.
-                </span>
+                <span className='text-[13px] font-normal'>Drag & drop a file to upload.</span>
               )}
             </span>
           </FileUploader>
@@ -134,11 +134,7 @@ const TransferUploadCard: React.FC = () => {
           />
         </div>
 
-        <button
-          type='submit'
-          className={`button-primary w-full`}
-          disabled={loading}
-        >
+        <button type='submit' className={`button-primary w-full`} disabled={loading}>
           {loading ? <ClipLoader color='white' size={20} /> : 'Transfer'}
         </button>
       </form>

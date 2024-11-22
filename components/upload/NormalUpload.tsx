@@ -10,23 +10,26 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { FileUploader } from 'react-drag-drop-files';
 
 const NormalUpload: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, walletAddress } = useAuth();
   const [file, setFile] = useState<File | null>(null);
-  const { address: connectedWalletAddress } = useAccount();
+  const { address: ethAddress } = useAccount();
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
   const [uploadedFileLink, setUploadedFileLink] = useState('');
   const { openConnectModal } = useConnectModal();
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
   const handleChange = (file: File) => {
     setFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.debug(isAuthenticated);
 
     if (!isAuthenticated && openConnectModal) {
       openConnectModal();
@@ -43,6 +46,7 @@ const NormalUpload: React.FC = () => {
     const base64Content = buffer.toString('base64');
 
     try {
+      setShowModal(true);
       const response = await fetch('/api/apillon/upload-files', {
         method: 'POST',
         headers: {
@@ -52,6 +56,7 @@ const NormalUpload: React.FC = () => {
           fileName: file.name,
           contentType: file.type,
           content: base64Content,
+          walletAddress: ethAddress || walletAddress,
         }),
       });
 
@@ -70,10 +75,10 @@ const NormalUpload: React.FC = () => {
         fileInputRef.current.value = '';
       }
       setUploadedFileLink(data.ipfs_url);
-      setShowModal(true);
     } catch (error) {
       console.error('Error during upload process:', error);
       toast.error('An error occurred. Please try again.');
+      setShowModal(false);
     } finally {
       setLoading(false);
     }
@@ -95,26 +100,35 @@ const NormalUpload: React.FC = () => {
               {file ? (
                 <strong className='text-[13px]'>{file.name}</strong>
               ) : (
-                <span className='text-[13px] font-normal'>
-                  Drag & drop a file to upload.
-                </span>
+                <span className='text-[13px] font-normal'>Drag & drop a file to upload.</span>
               )}
             </div>
           </FileUploader>
+          <div className='text-center pt-6 mb-8'>
+            <input
+              type='file'
+              className='absolute invisible -z-10'
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              id='btnFile'
+            />
+            <label htmlFor='btnFile' className='button-primary !rounded-full'>
+              Browse file
+            </label>
+          </div>
         </div>
         <div className='flex justify-between items-center pt-2'>
-          <button
-            type='submit'
-            className='button-primary w-full'
-            disabled={loading}
-          >
+          <button type='submit' className='button-primary w-full' disabled={loading}>
             {loading ? <ClipLoader color='white' size={20} /> : 'Upload'}
           </button>
         </div>
       </form>
       <UploadSuccessModal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={() => {
+          setShowModal(false);
+          setUploadedFileLink('');
+        }}
         fileLink={uploadedFileLink}
       />
     </div>

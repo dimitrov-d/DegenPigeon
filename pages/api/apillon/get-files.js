@@ -21,13 +21,12 @@ const bucket = storage.bucket(process.env.APILLON_BUCKET_UUID);
 const handler = async (req, res) => {
   // Check if the user is authenticated
   if (!req.session.siwe) {
-    return res
-      .status(401)
-      .json({ error: 'Unauthorized: User is not authenticated.' });
+    return res.status(401).json({ error: 'Unauthorized: User is not authenticated.' });
   }
 
   if (req.method === 'GET') {
-    const directoryPath = req.session.siwe.address;
+    const { walletAddress } = req.body;
+    const directoryPath = req.session.siwe.address || walletAddress;
 
     if (!directoryPath) {
       return res.status(400).json({ error: 'Missing required fields' });

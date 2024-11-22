@@ -1,117 +1,95 @@
-import { useState } from 'react';
-import SubstrateWallet from './SubstrateWallet';
-import { usePolkadotExtensionWithContext } from '@/context/polkadotExtensionContext';
-import { getWallets } from '@/hooks/useSubstrateWallet';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { getWallets, truncateWallet } from '@/lib/SubstrateWallet';
+import { DotsamaWallet } from '@/lib/DotSamaWallet';
+import { WalletAccount } from '@/lib/types/wallet';
 import Btn from '../Btn';
+import { createSiweMessage } from 'viem/siwe';
 
 export default function ConnectSubstrateWallet() {
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeWallet, setActiveWallet] = useState<Wallet | undefined>();
+  const { getNonce, logOut, verifyWallet, setIsAuthenticated, setWalletAddress } = useAuth();
 
+  const [isLoading, setIsLoading] = useState('');
+  const [activeWallet, setActiveWallet] = useState<DotsamaWallet | undefined>();
+  const [walletAccounts, setWalletAccounts] = useState<WalletAccount[]>([]);
+
+  const message = 'Sign in to DegenPigeon App';
   const wallets = getWallets();
 
-  const { accounts, actingAccount, injector } =
-    usePolkadotExtensionWithContext();
   // we can use web3FromSource which will return an InjectedExtension type
-  // console.log(accounts);
-  // console.log(actingAccount);
-  // console.log(injector);
 
-  const handleLogin = async () => {
+  const selectWallet = async (wallet: DotsamaWallet) => {
+    setActiveWallet(wallet);
+    await wallet.enable();
+    setWalletAccounts((await wallet.getAccounts()) || []);
+  };
+
+  const handleLogin = async (account: WalletAccount) => {
+    await logOut();
     try {
-      setIsLoading(true);
-      let signature = '';
-      const message = {
-        statement:
-          'Sign in with polkadot extension to the example tokengated example dApp',
+      setIsLoading(account.address);
+      const signature = await getMessageSignature(account.address, message, account.signer);
+      await verifyWallet({ message, signature });
+
+      const nonce = await getNonce();
+      const sive = await createSiweMessage({
+        domain: window.location.host,
+        // @ts-ignore
+        address: account.address,
+        statement: message,
         uri: window.location.origin,
         version: '1',
-      };
-
-      const signRaw = injector?.signer?.signRaw;
-
-      if (!!signRaw && !!actingAccount) {
-        // after making sure that signRaw is defined
-        // we can use it to sign our message
-        const data = await signRaw({
-          address: actingAccount.address,
-          data: JSON.stringify(message),
-          type: 'bytes',
-        });
-
-        signature = data.signature;
-      }
-
-      setIsLoading(false);
-    } catch (error) {
-      setError('Cancelled Signature');
-      setIsLoading(false);
+        chainId: 0,
+        nonce,
+      });
+      console.debug(sive);
+      setWalletAddress(account.address);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading('');
     }
   };
 
+  async function getMessageSignature(address: string, msg: string, signer: any) {
+    if (signer?.signRaw) {
+      try {
+        const signResult = await signer.signRaw({
+          address,
+          data: msg,
+          type: 'bytes',
+        });
+
+        return signResult.signature;
+      } catch (e) {
+        console.error('Error signing the message:', e);
+      }
+    }
+    return '';
+  }
+
   return (
     <>
-      {/* <ul>
-        {wallets.map((wallet) => (
-          <li key={wallet.extensionName}>
-            <img src={wallet.icon} alt={wallet.title} />
-            <h3>{wallet.title}</h3>
-            <p>
-              Install:{' '}
-              <a
-                href={wallet.installUrl.default}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                Browser Extension
-              </a>
-            </p>
-          </li>
-        ))}
-      </ul> */}
-
       <div className='flex flex-col gap-2'>
         {wallets.map((wallet, key) => (
           <div key={key}>
-            <Btn
-              disabled={!wallet.installed}
-              loading={false}
-              className={`button-outlined w-full ${
-                wallet.installed ? 'cursor-pointer' : ''
-              }`}
-              onClick={() => setActiveWallet(wallet)}
-            >
-              <span className='flex items-center text-xs'>
-                {wallet.image ? (
-                  <img
-                    src={wallet.image}
-                    alt={wallet.extensionName}
-                    className='mr-2 w-5 h-5'
-                    width={20}
-                    height={20}
-                  />
-                ) : (
-                  <span className='inline-block w-5 h-5 mr-2' />
-                )}
-                <span className='flex-1'>{wallet.title}</span>
-                <span className='wallet-install'>
-                  {!wallet.installed && (
-                    <a
-                      href={wallet.installUrl.default}
-                      className='inline-block relative z-10 cursor-pointer pointer-events-auto'
-                      target='_blank'
-                    >
-                      Install
-                    </a>
-                  )}
-                </span>
-              </span>
-            </Btn>
-            {activeWallet && wallet.extensionName === activeWallet.name && (
+            {wallet.installed ? (
+              <Btn
+                disabled={!wallet.installed}
+                loading={false}
+                className={`button-outlined w-full ${wallet.installed ? 'cursor-pointer' : ''}`}
+                onClick={() => selectWallet(wallet)}
+              >
+                {walletTemplate(wallet)}
+              </Btn>
+            ) : (
+              <div className='button-outlined disabled'>{walletTemplate(wallet)}</div>
+            )}
+
+            {activeWallet && wallet.extensionName === activeWallet.extensionName && (
               <div className='overflow-auto md:overflow-hidden'>
-                {activeWallet.accounts?.length ? (
-                  <table className='text-left'>
+                {walletAccounts.length ? (
+                  <table className='text-left w-full'>
                     <thead>
                       <tr>
                         <th>Name</th>
@@ -120,41 +98,19 @@ export default function ConnectSubstrateWallet() {
                       </tr>
                     </thead>
                     <tbody>
-                      {activeWallet.accounts.map((account, accountKey) => (
-                        <tr
-                          key={accountKey}
-                          className={
-                            account.type === 'ethereum' ? 'hidden' : ''
-                          }
-                        >
+                      {walletAccounts.map((account, accountKey) => (
+                        <tr key={accountKey} className={account.type === 'ethereum' ? 'hidden' : ''}>
                           <td className='whitespace-nowrap'>{account.name}</td>
-                          <td>{account.address}</td>
-                          <td>
-                            {/* {authStore.jwt &&
-                                authStore.user.wallet === account.address &&
-                                disconnect ? (
-                                  <Btn
-                                    type='error'
-                                    loading={
-                                      loading &&
-                                      authStore.wallet.address ===
-                                        account.address
-                                    }
-                                    onClick={() => onRemove(account)}
-                                  >
-                                    Disconnect
-                                  </Btn>
-                                ) : ( */}
-                            {/* <Btn
-                              type='secondary'
-                              loading={
-                                loading &&
-                                authStore.wallet.address === account.address
-                              }
-                              onClick={() => connectAccount(account)}
+                          <td className=''>{truncateWallet(account.address)}</td>
+                          <td className='text-right'>
+                            <Btn
+                              className='button-primary'
+                              disabled={false}
+                              loading={isLoading === account.address}
+                              onClick={() => handleLogin(account)}
                             >
                               {'Connect'}
-                            </Btn> */}
+                            </Btn>
                           </td>
                         </tr>
                       ))}
@@ -173,3 +129,29 @@ export default function ConnectSubstrateWallet() {
     </>
   );
 }
+
+export const walletTemplate = (wallet: DotsamaWallet) => {
+  return (
+    <span className='flex items-center text-xs'>
+      {wallet.image ? (
+        <img src={wallet.image} alt={wallet.extensionName} className='mr-2 w-5 h-5' width={20} height={20} />
+      ) : (
+        <span className='inline-block w-5 h-5 mr-2' />
+      )}
+      <span className='flex-1'>{wallet.title}</span>
+      <span className='wallet-install'>
+        {!wallet.installed ? (
+          <a
+            href={wallet.installUrl.default}
+            className='inline-block relative z-10 cursor-pointer pointer-events-auto'
+            target='_blank'
+          >
+            Install
+          </a>
+        ) : (
+          <span className='inline-block w-5'></span>
+        )}
+      </span>
+    </span>
+  );
+};

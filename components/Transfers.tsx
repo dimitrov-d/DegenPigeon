@@ -2,8 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import FileCard from './cards/FileCard';
 import { FileInfo } from './cards/types';
 import dayjs from 'dayjs';
+import { useAccount } from 'wagmi';
+import { useAuth } from '@/context/AuthContext';
 
 const Transfers: React.FC = () => {
+  const { walletAddress } = useAuth();
+  const { address } = useAccount();
   const [userFiles, setUserFiles] = useState<FileInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const hasFetchedFiles = useRef(false);
@@ -18,7 +22,7 @@ const Transfers: React.FC = () => {
   const fetchFiles = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/apillon/get-files', {
+      const response = await fetch(`/api/apillon/get-files?walletAddress=${address || walletAddress}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -66,11 +70,9 @@ const Transfers: React.FC = () => {
   return (
     <div className=''>
       <div className='p-4'>
-        <h2 className='text-md font-bold text-grey text-center'>
-          File storage and history
-        </h2>
+        <h2 className='text-md font-bold text-grey text-center'>File storage and history</h2>
 
-        <div className='mt-8'>
+        <div className='mt-8 max-h-[70dvh] overflow-auto'>
           {loading && (
             <div className='flex justify-center items-center'>
               <li className='flex items-center'>
@@ -99,9 +101,7 @@ const Transfers: React.FC = () => {
             </div>
           )}
           {!loading && userFiles.length === 0 && (
-            <div className='flex justify-center items-center text-gray-500'>
-              No files found.
-            </div>
+            <div className='flex justify-center items-center text-gray-500'>No files found.</div>
           )}
           {!loading &&
             userFiles.length > 0 &&
@@ -112,9 +112,7 @@ const Transfers: React.FC = () => {
                   <FileCard
                     key={file.fileUuid}
                     title={file.name}
-                    description={`- File uploaded · ${new Date(
-                      file.createTime
-                    ).toLocaleDateString()} · ${new Date(
+                    description={`- File uploaded · ${new Date(file.createTime).toLocaleDateString()} · ${new Date(
                       file.updateTime
                     ).toLocaleDateString()}`}
                     link={file.link}

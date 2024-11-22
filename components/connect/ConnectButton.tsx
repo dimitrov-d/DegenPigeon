@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAuth } from '@/context/AuthContext';
 import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 import { useEnsName } from 'wagmi';
 import truncateEthAddress from 'truncate-eth-address';
 import ModalWallet from '../modals/ModalWallet';
 import { createSiweMessage } from 'viem/siwe';
-import { chainConfig } from 'viem/zksync';
 import { mainnet } from 'viem/chains';
-import { recoverMessageAddress } from 'viem';
+import { truncateWallet } from '@/lib/SubstrateWallet';
 
 const ConnectButton = () => {
   const [showModal, setShowModal] = useState(false);
-  const { isAuthenticated, logOut, verifyWallet, setIsAuthenticated } =
-    useAuth();
+  const { isAuthenticated, walletAddress, getNonce, logOut, verifyWallet, setIsAuthenticated } = useAuth();
 
   const { disconnect } = useDisconnect();
   const { address, isConnected, chainId } = useAccount();
@@ -40,54 +37,35 @@ const ConnectButton = () => {
 
   useEffect(() => {
     (async () => {
-      if (signature) {
-        const verified = await verifyWallet({ message, signature });
-        setIsAuthenticated(verified);
+      if (signature && (await verifyWallet({ message, signature }))) {
+        const nonce = await getNonce();
 
-        if (verified) {
-          const nonce = await getNonce();
-          const sive = await createSiweMessage({
-            domain: window.location.host,
-            // @ts-ignore
-            address: address,
-            statement: message,
-            uri: window.location.origin,
-            version: '1',
-            chainId: chainId || mainnet.id,
-            nonce,
-          });
-          console.debug(sive);
-        }
+        await createSiweMessage({
+          domain: window.location.host,
+          // @ts-ignore
+          address: address,
+          statement: message,
+          uri: window.location.origin,
+          version: '1',
+          chainId: chainId || mainnet.id,
+          nonce,
+        });
       }
     })();
   }, [signature]);
 
-  const getNonce = async () => {
-    const response = await fetch('/api/auth/nonce');
-    return await response.text();
-  };
-
   return (
     <>
-      {isAuthenticated || (isConnected && address) ? (
-        <button
-          className='button-primary h-12 min-w-80'
-          onClick={async () => await disconnectWallet()}
-        >
-          Disconnect ({ensName ?? truncateEthAddress(address || '')})
+      {isAuthenticated && (walletAddress || address) ? (
+        <button className='button-primary h-12 min-w-80' onClick={async () => await disconnectWallet()}>
+          Disconnect ({address ? truncateEthAddress(address || '') : truncateWallet(walletAddress || '')})
         </button>
       ) : (
-        <button
-          style={{ width: '160px' }}
-          onClick={() => setShowModal(true)}
-          className='button-primary h-12 min-w-80'
-        >
+        <button className='button-primary h-12 min-w-80' onClick={() => setShowModal(true)}>
           Connect Wallet
         </button>
       )}
-      {!isAuthenticated && (
-        <ModalWallet isOpen={showModal} onClose={() => setShowModal(false)} />
-      )}
+      {!isAuthenticated && <ModalWallet isOpen={showModal} onClose={() => setShowModal(false)} />}
     </>
   );
 };

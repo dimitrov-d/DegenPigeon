@@ -14,11 +14,13 @@ export default function Home() {
 
         <Main />
 
-        <div className='flex flex-col gap-1 items-center mb-2'>
-          <Badge text='build with' icon='/images/apillon.svg' />
-          <Badge text='secured by' icon='/images/polkadot.svg' />
+        <div className='w-full'>
+          <div className='flex flex-col gap-1 items-center mb-2'>
+            <Badge text='build with' icon='/images/apillon.svg' />
+            <Badge text='secured by' icon='/images/polkadot.svg' />
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </div>
     </div>
   );

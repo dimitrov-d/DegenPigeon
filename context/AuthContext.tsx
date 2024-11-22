@@ -1,11 +1,5 @@
 import { AuthenticationStatus } from '@rainbow-me/rainbowkit';
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useRef,
-} from 'react';
+import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
 
 export enum ActionMode {
   TRANSFER = 'Transfer Mode',
@@ -19,6 +13,8 @@ export type VerifyArgs = {
 interface AuthContextType {
   email: string | null;
   setEmail: (email: string | null) => void;
+  walletAddress: string | null;
+  setWalletAddress: (address: string | null) => void;
   authStatus: AuthenticationStatus;
   setAuthStatus: (authStatus: AuthenticationStatus) => void;
   isAuthenticated: boolean;
@@ -28,12 +24,14 @@ interface AuthContextType {
   verifyWallet: (args: VerifyArgs) => Promise<boolean>;
   fetchAuthStatus: () => void;
   logOut: () => void;
+  getNonce: () => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [actionMode, setActionMode] = useState<string>(ActionMode.TRANSFER);
   const [authStatus, setAuthStatus] = useState<AuthenticationStatus>('loading');
@@ -68,16 +66,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, signature }),
       });
+      const res = await response.json();
 
       const authenticated = Boolean(response.ok);
 
       if (authenticated) {
         setIsAuthenticated(authenticated);
         setAuthStatus(authenticated ? 'authenticated' : 'unauthenticated');
+      } else if (res.message === 'Invalid nonce.') {
+        logOut();
       }
 
       return authenticated;
-    } catch (error) {
+    } catch (error: any) {
+      console.debug(error);
+      console.debug(error?.message);
+      if (error?.message === 'Invalid nonce.') {
+        logOut();
+      }
       return false;
     } finally {
       verifyingRef.current = false;
@@ -90,11 +96,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await fetch('/api/auth/logout');
   };
 
+  const getNonce = async () => {
+    const response = await fetch('/api/auth/nonce');
+    return await response.text();
+  };
+
   return (
     <AuthContext.Provider
       value={{
         email,
         setEmail,
+        walletAddress,
+        setWalletAddress,
         authStatus,
         setAuthStatus,
         isAuthenticated,
@@ -104,6 +117,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         fetchAuthStatus,
         verifyWallet,
         logOut,
+        getNonce,
       }}
     >
       {children}
