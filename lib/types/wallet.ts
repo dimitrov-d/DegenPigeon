@@ -6,7 +6,7 @@ import {
   Unsubcall,
 } from '@polkadot/extension-inject/types';
 import { Signer } from '@polkadot/api/types';
-import { DotsamaWallet } from '../DotSamaWallet';
+import { DotsamaWallet } from '../DotsamaWallet';
 
 export type SubscriptionFn = (accounts: WalletAccount[] | undefined) => void | Promise<void>;
 

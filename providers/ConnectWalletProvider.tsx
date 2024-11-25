@@ -27,54 +27,18 @@ const ConnectWalletProvider = ({
   children: React.ReactNode;
   pageProps: AppProps['pageProps'];
 }) => {
-  const { authStatus, isAuthenticated, getNonce, fetchAuthStatus, verifyWallet, logOut } = useAuth();
+  const { fetchAuthStatus } = useAuth();
 
   useEffect(() => {
     fetchAuthStatus();
 
-    // window.addEventListener('focus', fetchAuthStatus);
-    // return () => window.removeEventListener('focus', fetchAuthStatus);
-  }, []);
-
-  const authAdapter = useMemo(() => {
-    return createAuthenticationAdapter({
-      getMessageBody<Message>(args: { message: Message }): string {
-        return args.message as string;
-      },
-      getNonce: async () => await getNonce(),
-
-      createMessage: ({ nonce, address, chainId }) => {
-        return createSiweMessage({
-          domain: window.location.host,
-          // @ts-ignore
-          address: address,
-          statement: 'Sign in to DegenPigeon App',
-          uri: window.location.origin,
-          version: '1',
-          chainId,
-          nonce,
-        });
-      },
-
-      verify: async ({ message, signature }: VerifyArgs) => verifyWallet({ message, signature }),
-
-      signOut: async () => {
-        if (isAuthenticated) {
-          logOut();
-        }
-      },
-    });
+    window.addEventListener('focus', fetchAuthStatus);
+    return () => window.removeEventListener('focus', fetchAuthStatus);
   }, []);
 
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitAuthenticationProvider adapter={authAdapter} status={authStatus}>
-          <RainbowKitProvider theme={darkTheme()} modalSize='compact'>
-            {children}
-          </RainbowKitProvider>
-        </RainbowKitAuthenticationProvider>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );
 };

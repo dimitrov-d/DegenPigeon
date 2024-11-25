@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { getWallets, truncateWallet } from '@/lib/SubstrateWallet';
-import { DotsamaWallet } from '@/lib/DotSamaWallet';
 import { WalletAccount } from '@/lib/types/wallet';
+import { DotsamaWallet } from '@/lib/DotsamaWallet';
 import Btn from '../Btn';
-import { createSiweMessage } from 'viem/siwe';
 
 export default function ConnectSubstrateWallet() {
-  const { getNonce, logOut, verifyWallet, setIsAuthenticated, setWalletAddress } = useAuth();
+  const { verifyWallet } = useAuth();
 
   const [isLoading, setIsLoading] = useState('');
   const [activeWallet, setActiveWallet] = useState<DotsamaWallet | undefined>();
@@ -16,8 +15,6 @@ export default function ConnectSubstrateWallet() {
   const message = 'Sign in to DegenPigeon App';
   const wallets = getWallets();
 
-  // we can use web3FromSource which will return an InjectedExtension type
-
   const selectWallet = async (wallet: DotsamaWallet) => {
     setActiveWallet(wallet);
     await wallet.enable();
@@ -25,25 +22,11 @@ export default function ConnectSubstrateWallet() {
   };
 
   const handleLogin = async (account: WalletAccount) => {
-    await logOut();
     try {
       setIsLoading(account.address);
       const signature = await getMessageSignature(account.address, message, account.signer);
-      await verifyWallet({ message, signature });
 
-      const nonce = await getNonce();
-      const sive = await createSiweMessage({
-        domain: window.location.host,
-        // @ts-ignore
-        address: account.address,
-        statement: message,
-        uri: window.location.origin,
-        version: '1',
-        chainId: 0,
-        nonce,
-      });
-      console.debug(sive);
-      setWalletAddress(account.address);
+      await verifyWallet({ address: account.address, username: account.name || account.address, message, signature });
     } catch (e) {
       console.error(e);
     } finally {

@@ -4,20 +4,16 @@ import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 import { useEnsName } from 'wagmi';
 import truncateEthAddress from 'truncate-eth-address';
 import ModalWallet from '../modals/ModalWallet';
-import { createSiweMessage } from 'viem/siwe';
-import { mainnet } from 'viem/chains';
 import { truncateWallet } from '@/lib/SubstrateWallet';
 
 const ConnectButton = () => {
   const [showModal, setShowModal] = useState(false);
-  const { isAuthenticated, walletAddress, getNonce, logOut, verifyWallet, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, walletAddress, logOut, verifyWallet } = useAuth();
 
   const { disconnect } = useDisconnect();
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: signature, signMessage } = useSignMessage();
-  const { data: ensName } = useEnsName({
-    address: address,
-  });
+  const { data: ensName } = useEnsName({ address: address });
   const message = 'Sign in to DegenPigeon App';
 
   const disconnectWallet = async () => {
@@ -37,19 +33,9 @@ const ConnectButton = () => {
 
   useEffect(() => {
     (async () => {
-      if (signature && (await verifyWallet({ message, signature }))) {
-        const nonce = await getNonce();
-
-        await createSiweMessage({
-          domain: window.location.host,
-          // @ts-ignore
-          address: address,
-          statement: message,
-          uri: window.location.origin,
-          version: '1',
-          chainId: chainId || mainnet.id,
-          nonce,
-        });
+      if (address && signature) {
+        await verifyWallet({ address, username: address, message, signature });
+        setShowModal(false);
       }
     })();
   }, [signature]);

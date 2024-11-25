@@ -7,6 +7,8 @@ export enum ActionMode {
   HISTORY = 'History',
 }
 export type VerifyArgs = {
+  address: string;
+  username: string;
   message: string;
   signature: string;
 };
@@ -24,7 +26,6 @@ interface AuthContextType {
   verifyWallet: (args: VerifyArgs) => Promise<boolean>;
   fetchAuthStatus: () => void;
   logOut: () => void;
-  getNonce: () => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,41 +50,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const json = await response.json();
       setAuthStatus(json.address ? 'authenticated' : 'unauthenticated');
       setIsAuthenticated(!!json.address);
+      setWalletAddress(json.address);
     } catch (_error) {
       setAuthStatus('unauthenticated');
       setIsAuthenticated(false);
+      setWalletAddress('');
     } finally {
       fetchingStatusRef.current = false;
     }
   };
 
-  const verifyWallet = async ({ message, signature }: VerifyArgs) => {
+  const verifyWallet = async ({ address, username, message, signature }: VerifyArgs) => {
     verifyingRef.current = true;
 
     try {
       const response = await fetch('/api/auth/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, signature }),
+        body: JSON.stringify({ address, username, message, signature }),
       });
-      const res = await response.json();
 
       const authenticated = Boolean(response.ok);
-
       if (authenticated) {
         setIsAuthenticated(authenticated);
         setAuthStatus(authenticated ? 'authenticated' : 'unauthenticated');
-      } else if (res.message === 'Invalid nonce.') {
+        setWalletAddress(address);
+      } else {
         logOut();
       }
 
       return authenticated;
     } catch (error: any) {
-      console.debug(error);
-      console.debug(error?.message);
-      if (error?.message === 'Invalid nonce.') {
-        logOut();
-      }
+      logOut();
       return false;
     } finally {
       verifyingRef.current = false;
@@ -93,12 +91,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logOut = async () => {
     setAuthStatus('unauthenticated');
     setIsAuthenticated(false);
-    await fetch('/api/auth/logout');
-  };
-
-  const getNonce = async () => {
-    const response = await fetch('/api/auth/nonce');
-    return await response.text();
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+    });
   };
 
   return (
@@ -117,7 +112,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         fetchAuthStatus,
         verifyWallet,
         logOut,
-        getNonce,
       }}
     >
       {children}

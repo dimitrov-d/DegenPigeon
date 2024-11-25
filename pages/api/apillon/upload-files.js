@@ -1,6 +1,5 @@
+import jwt from 'jsonwebtoken';
 import { LogLevel, Storage } from '@apillon/sdk';
-import { withIronSessionApiRoute } from 'iron-session/next';
-import { ironOptions } from '@/lib/iron';
 
 if (!process.env.APILLON_API_KEY || !process.env.APILLON_API_SECRET) {
   throw new Error('Apillon SDK credentials are not properly set');
@@ -18,15 +17,18 @@ const storage = new Storage({
 
 const bucket = storage.bucket(process.env.APILLON_BUCKET_UUID);
 
-const handler = async (req, res) => {
+export default async function handler(req, res) {
   // Check if the user is authenticated
-  if (!req.session.siwe) {
+  const jwtToken = req.cookies['degen-pigeon-auth'];
+  if (!jwtToken) {
     return res.status(401).json({ error: 'Unauthorized: User is not authenticated.' });
   }
+  const user = jwt.verify(jwtToken, process.env.NEXT_IRON_PASSWORD);
+
   if (req.method === 'POST') {
     const { fileName, contentType, content, walletAddress } = req.body;
 
-    const directoryPath = req.session.siwe.address || walletAddress;
+    const directoryPath = user.address || walletAddress;
 
     if (!fileName || !content || !directoryPath) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -65,7 +67,7 @@ const handler = async (req, res) => {
     res.setHeader('Allow', ['POST']);
     res.status(405).json({ error: 'Method Not Allowed' });
   }
-};
+}
 
 export const config = {
   api: {
@@ -74,5 +76,3 @@ export const config = {
     },
   },
 };
-
-export default withIronSessionApiRoute(handler, ironOptions);
