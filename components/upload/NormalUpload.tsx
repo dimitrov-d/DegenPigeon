@@ -1,13 +1,12 @@
 import React, { useState, useRef } from 'react';
-import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import UploadSuccessModal from '../modals/UploadSuccessModal';
 import helpers from '@/utils/helpers';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { FileUploader } from 'react-drag-drop-files';
+import ModalConnect from '../modals/ModalConnect';
 
 const NormalUpload: React.FC = () => {
   const { isAuthenticated, walletAddress } = useAuth();
@@ -16,8 +15,8 @@ const NormalUpload: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showModalConnect, setShowModalConnect] = useState(false);
   const [uploadedFileLink, setUploadedFileLink] = useState('');
-  const { openConnectModal } = useConnectModal();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -31,8 +30,8 @@ const NormalUpload: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isAuthenticated && openConnectModal) {
-      openConnectModal();
+    if (!isAuthenticated && !showModalConnect) {
+      setShowModalConnect(true);
       return;
     }
 
@@ -85,7 +84,7 @@ const NormalUpload: React.FC = () => {
   };
 
   return (
-    <div className=''>
+    <>
       <form className='space-y-4' onSubmit={handleSubmit}>
         <div className='space-y-1'>
           <FileUploader handleChange={handleChange} name='file'>
@@ -131,7 +130,8 @@ const NormalUpload: React.FC = () => {
         }}
         fileLink={uploadedFileLink}
       />
-    </div>
+      <ModalConnect isOpen={showModalConnect} onClose={() => setShowModalConnect(false)} />
+    </>
   );
 };
 

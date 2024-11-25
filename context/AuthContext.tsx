@@ -17,10 +17,10 @@ interface AuthContextType {
   setEmail: (email: string | null) => void;
   walletAddress: string | null;
   setWalletAddress: (address: string | null) => void;
-  authStatus: AuthenticationStatus;
-  setAuthStatus: (authStatus: AuthenticationStatus) => void;
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
+  isDocumentation: boolean;
+  setIsDocumentation: (isDocumentation: boolean) => void;
   actionMode: string;
   setActionMode: (actionMode: string) => void;
   verifyWallet: (args: VerifyArgs) => Promise<boolean>;
@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isDocumentation, setIsDocumentation] = useState<boolean>(false);
   const [actionMode, setActionMode] = useState<string>(ActionMode.TRANSFER);
-  const [authStatus, setAuthStatus] = useState<AuthenticationStatus>('loading');
 
   const fetchingStatusRef = useRef(false);
   const verifyingRef = useRef(false);
@@ -48,11 +48,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await fetch('/api/auth/me');
       const json = await response.json();
-      setAuthStatus(json.address ? 'authenticated' : 'unauthenticated');
       setIsAuthenticated(!!json.address);
       setWalletAddress(json.address);
     } catch (_error) {
-      setAuthStatus('unauthenticated');
       setIsAuthenticated(false);
       setWalletAddress('');
     } finally {
@@ -73,7 +71,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const authenticated = Boolean(response.ok);
       if (authenticated) {
         setIsAuthenticated(authenticated);
-        setAuthStatus(authenticated ? 'authenticated' : 'unauthenticated');
         setWalletAddress(address);
       } else {
         logOut();
@@ -89,8 +86,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logOut = async () => {
-    setAuthStatus('unauthenticated');
     setIsAuthenticated(false);
+    setWalletAddress('');
     await fetch('/api/auth/logout', {
       method: 'POST',
     });
@@ -103,10 +100,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setEmail,
         walletAddress,
         setWalletAddress,
-        authStatus,
-        setAuthStatus,
         isAuthenticated,
         setIsAuthenticated,
+        isDocumentation,
+        setIsDocumentation,
         actionMode,
         setActionMode,
         fetchAuthStatus,

@@ -8,7 +8,7 @@ const Navbar = () => {
         <div></div>
 
         <div className='relative'>
-          <ConnectButton />
+          <ConnectButton center={false} />
         </div>
       </div>
     </div>

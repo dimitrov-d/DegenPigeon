@@ -26,6 +26,7 @@ const config: Config = {
         light: '#F2F1EB',
         DEFAULT: '#E8DFC1',
         dark: '#E8E4D6',
+        black: '#141721',
       },
       brown: {
         light: '#D0B794',

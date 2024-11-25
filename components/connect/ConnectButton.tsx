@@ -6,7 +6,12 @@ import truncateEthAddress from 'truncate-eth-address';
 import ModalWallet from '../modals/ModalWallet';
 import { truncateWallet } from '@/lib/SubstrateWallet';
 
-const ConnectButton = () => {
+type Props = {
+  [x: string]: any;
+  center: boolean;
+};
+
+const ConnectButton = ({ center, ...attrs }: Props) => {
   const [showModal, setShowModal] = useState(false);
   const { isAuthenticated, walletAddress, logOut, verifyWallet } = useAuth();
 
@@ -43,15 +48,18 @@ const ConnectButton = () => {
   return (
     <>
       {isAuthenticated && (walletAddress || address) ? (
-        <button className='button-primary h-12 min-w-80' onClick={async () => await disconnectWallet()}>
+        <button
+          className={`button-primary h-12 min-w-80 ${attrs.className}`}
+          onClick={async () => await disconnectWallet()}
+        >
           Disconnect ({address ? truncateEthAddress(address || '') : truncateWallet(walletAddress || '')})
         </button>
       ) : (
-        <button className='button-primary h-12 min-w-80' onClick={() => setShowModal(true)}>
-          Connect Wallet
+        <button className={`button-primary h-12 min-w-80 ${attrs.className}`} onClick={() => setShowModal(true)}>
+          Connect
         </button>
       )}
-      {!isAuthenticated && <ModalWallet isOpen={showModal} onClose={() => setShowModal(false)} />}
+      {!isAuthenticated && <ModalWallet isOpen={showModal} center={center} onClose={() => setShowModal(false)} />}
     </>
   );
 };

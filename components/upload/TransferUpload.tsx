@@ -5,17 +5,18 @@ import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 import SuccessModal from '../modals/SuccessModal';
 import helpers from '@/utils/helpers';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+
 import { useAccount } from 'wagmi';
+import ModalConnect from '../modals/ModalConnect';
 
 const TransferUploadCard: React.FC = () => {
   const { isAuthenticated, walletAddress } = useAuth();
   const { address: ethAddress } = useAccount();
-  const { openConnectModal } = useConnectModal();
 
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showModalConnect, setShowModalConnect] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -30,8 +31,8 @@ const TransferUploadCard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isAuthenticated && openConnectModal) {
-      openConnectModal();
+    if (!isAuthenticated && !showModalConnect) {
+      setShowModalConnect(true);
       return;
     }
 
@@ -90,11 +91,11 @@ const TransferUploadCard: React.FC = () => {
   };
 
   return (
-    <div className=''>
+    <>
       <form className='space-y-4' onSubmit={handleSubmit}>
         <div className='space-y-1'>
           <FileUploader handleChange={handleChange} name='file'>
-            <span className='relative block w-full p-4 pb-8 text-center text-grey dashed-border'>
+            <div className='relative block w-full p-4 pb-8 text-center text-grey dashed-border'>
               <img
                 src='/images/cloud-add.svg'
                 alt='Degen pigeon upload'
@@ -107,7 +108,7 @@ const TransferUploadCard: React.FC = () => {
               ) : (
                 <span className='text-[13px] font-normal'>Drag & drop a file to upload.</span>
               )}
-            </span>
+            </div>
           </FileUploader>
           <div className='text-center pt-6 mb-8'>
             <input
@@ -117,14 +118,14 @@ const TransferUploadCard: React.FC = () => {
               ref={fileInputRef}
               id='btnFile'
             />
-            {/* <label htmlFor='btnFile' className='button-primary !rounded-full'>
+            <label htmlFor='btnFile' className='button-primary !rounded-full'>
               Browse file
-            </label> */}
+            </label>
           </div>
         </div>
 
         <div className='space-y-1'>
-          {/* <label>Enter the mail</label> */}
+          <label>Enter the mail</label>
           <input
             type='email'
             className='w-full'
@@ -139,7 +140,8 @@ const TransferUploadCard: React.FC = () => {
         </button>
       </form>
       <SuccessModal isOpen={showModal} onClose={() => setShowModal(false)} />
-    </div>
+      <ModalConnect isOpen={showModalConnect} onClose={() => setShowModalConnect(false)} />
+    </>
   );
 };
 

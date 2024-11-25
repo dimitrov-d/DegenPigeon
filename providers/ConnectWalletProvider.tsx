@@ -1,16 +1,8 @@
-import '@rainbow-me/rainbowkit/styles.css';
-import {
-  RainbowKitProvider,
-  darkTheme,
-  RainbowKitAuthenticationProvider,
-  createAuthenticationAdapter,
-} from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { createSiweMessage } from 'viem/siwe';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import config from '@/providers/wagmiConfig';
 import type { AppProps } from 'next/app';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 const queryClient = new QueryClient();

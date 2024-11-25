@@ -75,11 +75,11 @@ const Transfers: React.FC = () => {
         <div className='mt-8 max-h-[70dvh] overflow-auto'>
           {loading && (
             <div className='flex justify-center items-center'>
-              <li className='flex items-center'>
+              <div className='flex items-center'>
                 <div role='status'>
                   <svg
                     aria-hidden='true'
-                    style={{ fill: 'rgb(147 51 234 / 1)' }}
+                    style={{ fill: '#313442' }}
                     className='w-4 h-4 me-2 text-gray-200 animate-spin'
                     viewBox='0 0 100 101'
                     fill='none'
@@ -97,7 +97,7 @@ const Transfers: React.FC = () => {
                   <span className='sr-only'>Loading...</span>
                 </div>
                 Fetching files...
-              </li>
+              </div>
             </div>
           )}
           {!loading && userFiles.length === 0 && (

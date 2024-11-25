@@ -31,17 +31,11 @@ function ConnectEvmWallet() {
       {evmWallets.map((wallet) =>
         wallet?.connector ? (
           <button
-            className='button-outlined whitespace-nowrap flex items-center gap-2'
+            className='button-outlined whitespace-nowrap flex items-center justify-center gap-2'
             onClick={() => handleConnect(wallet.connector)}
             key={wallet.connector.uid}
           >
-            <img
-              src={wallet.image}
-              alt={wallet.name}
-              className='mr-2 w-5 h-5'
-              width={20}
-              height={20}
-            />
+            <img src={wallet.image} alt={wallet.name} className='mr-2 w-5 h-5' width={20} height={20} />
             <span className='block'>{wallet.name}</span>
           </button>
         ) : (

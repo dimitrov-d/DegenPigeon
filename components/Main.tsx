@@ -1,11 +1,11 @@
 'use client';
 import React, { useEffect } from 'react';
-import Image from 'next/image';
 import TransferUpload from './upload/TransferUpload';
 import Transfers from './Transfers';
 import NormalUpload from './upload/NormalUpload';
 import { ActionMode, useAuth } from '@/context/AuthContext';
 import useScreen from '@/hooks/useScreen';
+import ConnectButton from './connect/ConnectButton';
 
 const Main = () => {
   const { isAuthenticated, actionMode, setActionMode } = useAuth();
@@ -27,7 +27,7 @@ const Main = () => {
   }
 
   return (
-    <div className='flex justify-center gap-6 mt-8 pt-20 px-4'>
+    <main className='flex justify-center gap-6 mt-8 pt-20 px-4'>
       {isXl && (
         <div className='max-w-xs w-full'>
           <span></span>
@@ -60,15 +60,26 @@ const Main = () => {
             ))}
           </div>
 
-          <p className='whitespace-break-spaces'>
-            {actionMode === ActionMode.TRANSFER
-              ? 'Upload. Send. Done. \nDegenPigeon delivers—unstoppable files on a decentralized network.'
-              : 'Upload, enter email, done. Your files are shared over decentralized network, making them unstoppable.'}
-          </p>
-          <p className='font-bold mb-4'>Welcome to Web3!</p>
+          {actionMode !== ActionMode.HISTORY && (
+            <div>
+              <p className='whitespace-break-spaces'>
+                {actionMode === ActionMode.TRANSFER
+                  ? 'Upload. Send. Done. \nDegenPigeon delivers—unstoppable files on a decentralized network.'
+                  : 'Upload, enter email, done. Your files are shared over decentralized network, making them unstoppable.'}
+              </p>
+              <p className='font-bold mb-4'>Welcome to Web3!</p>
+            </div>
+          )}
         </div>
-
-        <UploadComponent />
+        {actionMode === ActionMode.HISTORY && !isAuthenticated ? (
+          <div className='text-center py-4'>
+            <h2 className='text-text-dark mb-4 font-bold'>Not connected</h2>
+            <p className='mb-6'>Before proceeding, connect your wallet.</p>
+            <ConnectButton center={true} />
+          </div>
+        ) : (
+          <UploadComponent />
+        )}
       </div>
 
       {isXl && (
@@ -80,7 +91,7 @@ const Main = () => {
           )}
         </div>
       )}
-    </div>
+    </main>
   );
 };
 

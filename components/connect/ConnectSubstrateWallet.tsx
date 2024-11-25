@@ -115,18 +115,18 @@ export default function ConnectSubstrateWallet() {
 
 export const walletTemplate = (wallet: DotsamaWallet) => {
   return (
-    <span className='flex items-center text-xs'>
+    <div className='flex items-center justify-center gap-2 text-xs'>
       {wallet.image ? (
         <img src={wallet.image} alt={wallet.extensionName} className='mr-2 w-5 h-5' width={20} height={20} />
       ) : (
         <span className='inline-block w-5 h-5 mr-2' />
       )}
-      <span className='flex-1'>{wallet.title}</span>
+      <span>{wallet.title}</span>
       <span className='wallet-install'>
         {!wallet.installed ? (
           <a
             href={wallet.installUrl.default}
-            className='inline-block relative z-10 cursor-pointer pointer-events-auto'
+            className='inline-block relative z-10 cursor-pointer pointer-events-auto text-[10px]'
             target='_blank'
           >
             Install
@@ -135,6 +135,6 @@ export const walletTemplate = (wallet: DotsamaWallet) => {
           <span className='inline-block w-5'></span>
         )}
       </span>
-    </span>
+    </div>
   );
 };
