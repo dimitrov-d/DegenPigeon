@@ -1,5 +1,5 @@
 import type { InjectedWindow } from '@polkadot/extension-inject/types';
-import { DotsamaWallet } from './DotSamaWallet';
+import { DotSamaWallet } from './DotSamaWallet';
 import { WalletInfo } from './types/wallet';
 
 // Predefined wallets
@@ -36,8 +36,8 @@ const PREDEFINED_WALLETS: WalletInfo[] = [
 /**
  * Get all wallets
  */
-export function getWallets(): DotsamaWallet[] {
-  return PREDEFINED_WALLETS.map((wallet) => new DotsamaWallet(wallet));
+export function getWallets(): DotSamaWallet[] {
+  return PREDEFINED_WALLETS.map((wallet) => new DotSamaWallet(wallet));
 }
 
 export function truncateWallet(source: string, partLength: number = 4): string {

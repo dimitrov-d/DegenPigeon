@@ -2,20 +2,20 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { getWallets, truncateWallet } from '@/lib/SubstrateWallet';
 import { WalletAccount } from '@/lib/types/wallet';
-import { DotsamaWallet } from '@/lib/DotsamaWallet';
+import { DotSamaWallet } from '@/lib/DotSamaWallet';
 import Btn from '../Btn';
 
 export default function ConnectSubstrateWallet() {
   const { verifyWallet } = useAuth();
 
   const [isLoading, setIsLoading] = useState('');
-  const [activeWallet, setActiveWallet] = useState<DotsamaWallet | undefined>();
+  const [activeWallet, setActiveWallet] = useState<DotSamaWallet | undefined>();
   const [walletAccounts, setWalletAccounts] = useState<WalletAccount[]>([]);
 
   const message = 'Sign in to DegenPigeon App';
   const wallets = getWallets();
 
-  const selectWallet = async (wallet: DotsamaWallet) => {
+  const selectWallet = async (wallet: DotSamaWallet) => {
     setActiveWallet(wallet);
     await wallet.enable();
     setWalletAccounts((await wallet.getAccounts()) || []);
@@ -113,7 +113,7 @@ export default function ConnectSubstrateWallet() {
   );
 }
 
-export const walletTemplate = (wallet: DotsamaWallet) => {
+export const walletTemplate = (wallet: DotSamaWallet) => {
   return (
     <div className='flex items-center justify-center gap-2 text-xs'>
       {wallet.image ? (

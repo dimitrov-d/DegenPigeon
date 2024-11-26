@@ -1,5 +1,5 @@
 import React from 'react';
-import { useConnect } from 'wagmi';
+import { Connector, CreateConnectorFn, useConnect } from 'wagmi';
 
 function ConnectEvmWallet() {
   const { connect, connectors } = useConnect();
@@ -22,7 +22,7 @@ function ConnectEvmWallet() {
     },
   ];
 
-  const handleConnect = async (connector) => {
+  const handleConnect = async (connector: Connector | CreateConnectorFn) => {
     await connect({ connector });
   };
 
@@ -32,7 +32,7 @@ function ConnectEvmWallet() {
         wallet?.connector ? (
           <button
             className='button-outlined whitespace-nowrap flex items-center justify-center gap-2'
-            onClick={() => handleConnect(wallet.connector)}
+            onClick={() => handleConnect(wallet.connector!)}
             key={wallet.connector.uid}
           >
             <img src={wallet.image} alt={wallet.name} className='mr-2 w-5 h-5' width={20} height={20} />

@@ -6,13 +6,13 @@ import {
   Unsubcall,
 } from '@polkadot/extension-inject/types';
 import { Signer } from '@polkadot/api/types';
-import { DotsamaWallet } from '../DotsamaWallet';
+import { DotSamaWallet } from '../DotSamaWallet';
 
 export type SubscriptionFn = (accounts: WalletAccount[] | undefined) => void | Promise<void>;
 
 export interface WalletAccount extends InjectedAccount {
   source?: string;
-  wallet: DotsamaWallet;
+  wallet: DotSamaWallet;
   signer?: Signer;
 }
 

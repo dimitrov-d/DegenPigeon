@@ -11,9 +11,9 @@ const Footer = () => {
         <div className='text-black text-xs'>
           <strong>degenpigeon.com © 2024</strong>
         </div>
-        <div className='text-[10px]'>
+        <div className='text-[14px]'>
           <span className='cursor-pointer' onClick={() => setIsDocumentation(true)}>
-            How does it work? Decentralization
+            How does it work?
           </span>
         </div>
       </div>

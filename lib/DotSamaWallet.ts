@@ -10,7 +10,7 @@ import { SubscriptionFn, WalletAccount, WalletInfo } from './types/wallet';
 
 const DAPP_NAME = 'DegenPigeon Wallet Connect';
 
-export class DotsamaWallet {
+export class DotSamaWallet {
   extensionName: string;
   title: string;
   installUrl: Record<string, string>;
