@@ -53,7 +53,7 @@ export default function Documentation() {
             </a>
           </li>
           <li>
-            <a href='https://github.com/Apillon/FileFusion' target='_blank'>
+            <a href='https://github.com/dimitrov-d/DegenPigeon' target='_blank'>
               Review DegenPigeon code
             </a>
           </li>
