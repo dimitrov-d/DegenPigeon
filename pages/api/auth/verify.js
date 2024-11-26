@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import { Identity } from '@apillon/sdk';
 
+export const maxDuration = 60;
+
 export default function handler(req, res) {
   if (req.method === 'POST') {
     const { username, address, message, signature } = req.body;
@@ -22,6 +24,7 @@ export default function handler(req, res) {
         message,
         signature,
       });
+      console.debug(address, validatedSignature);
       if (!validatedSignature.isValid) throw new Error('Invalid signature.');
     } else {
       const validatedSignature = identity.validatePolkadotWalletSignature({
@@ -29,6 +32,7 @@ export default function handler(req, res) {
         message,
         signature,
       });
+      console.debug(address, validatedSignature);
       if (!validatedSignature.isValid) throw new Error('Invalid signature.');
     }
 

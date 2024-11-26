@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import ConnectButton from '../connect/ConnectButton';
 import Btn from '../Btn';
+import { useAuth } from '@/context/AuthContext';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,6 +10,14 @@ interface ModalProps {
 }
 
 function ModalConnect({ isOpen, onClose }: ModalProps) {
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      onClose();
+    }
+  }, [isAuthenticated]);
+
   return (
     <Dialog open={isOpen} onClose={onClose} className='relative z-[99999]'>
       <div className='fixed inset-0 flex w-screen items-center justify-center p-4'>
