@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { LogLevel, Storage } from '@apillon/sdk';
 
+export const maxDuration = 60;
+
 export default async function handler(req, res) {
   if (!process.env.APILLON_API_KEY || !process.env.APILLON_API_SECRET) {
     throw new Error('Apillon SDK credentials are not properly set');

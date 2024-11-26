@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import { Identity } from '@apillon/sdk';
 
+export const maxDuration = 60;
+
 export default function handler(req, res) {
   if (req.method === 'POST') {
     const { username, address, message, signature } = req.body;
