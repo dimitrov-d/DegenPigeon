@@ -8,7 +8,7 @@ const getEmailTemplate = (templateName, data) => {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>FileFusion: You've received a file!</title>
+                <title>DegenPigeon: You've received a file!</title>
                 <style>
                     /* General styles */
                     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; color: #333; }
@@ -46,17 +46,7 @@ const getEmailTemplate = (templateName, data) => {
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const {
-      to,
-      subject,
-      text,
-      from,
-      fromName,
-      link,
-      templateName,
-      nftId,
-      targetWalletAddress,
-    } = req.body;
+    const { to, subject, text, from, fromName, link, templateName, nftId, targetWalletAddress } = req.body;
 
     if (!to || !subject || !text || !from || !fromName || !link) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -83,9 +73,7 @@ export default async function handler(req, res) {
     transporter.verify(function (error, success) {
       if (error) {
         console.error('Transporter error:', error);
-        return res
-          .status(500)
-          .json({ error: 'Transporter configuration error' });
+        return res.status(500).json({ error: 'Transporter configuration error' });
       } else {
         console.log('Server is ready to take our messages:', success);
       }

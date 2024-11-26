@@ -4,9 +4,9 @@
     <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
 </div>
 
-## FileFusion
+## DegenPigeon
 
-**Filefusion** is a decentralized, Web3 file-sharing and storage platform built on Apillon's infrastructure within the Polkadot ecosystem. It leverages blockchain technology to offer enhanced security, privacy, and user control over their data, while providing features similar to WeTransfer and Dropbox.
+**DegenPigeon** is a decentralized, Web3 file-sharing and storage platform built on Apillon's infrastructure within the Polkadot ecosystem. It leverages blockchain technology to offer enhanced security, privacy, and user control over their data, while providing features similar to WeTransfer and Dropbox.
 
 ## 📋 <a name="table">Table of Contents</a>
 
@@ -30,7 +30,7 @@
 - **Sign in with Wallet Connect (using Metamask, WalletConnect or Coinbase Wallet)**
   ![Untitled design](https://i.ibb.co/7rGw6NW/Screenshot-2024-10-12-at-17-41-28.png)
 
-Filefusion has three modes.
+DegenPigeon has three modes.
 
 - **Storage Mode** - The storage mode works like a basic version of dropbox. Users can upload files and get a shareable link to access their uploaded files
   <img width="1440" alt="storage-mode" src="https://github.com/Ghost-xDD/FileFusion/assets/42726051/4f8abb5f-c8dd-4dd9-99bf-13d64fd1de2c">
@@ -42,7 +42,7 @@ Filefusion has three modes.
 - **Private Mode** - Files transferred using private mode are encrypted before they are uploaded and transferred to the recipient. User's get access to a decryption site in their email and only the wallet address with the designated NFT Key can access the file.
   <img width="1440" alt="Screenshot 2024-06-10 at 4 18 07 PM" src="https://github.com/Ghost-xDD/FileFusion/assets/42726051/5e4a575b-55f7-49fc-8582-5f4a61081a07">
 
-- Access all of your files transferred and uploaded using FileFusion
+- Access all of your files transferred and uploaded using DegenPigeon
   <img width="1440" alt="Screenshot 2024-06-10 at 4 16 17 PM" src="https://github.com/Ghost-xDD/FileFusion/assets/42726051/cede5957-0cfa-446b-bc10-9cd084ce9028">
 
 #### Wallet Connect Project ID
@@ -69,11 +69,11 @@ You can generate a secret key using this code on your terminal
 
 ### Clone the repository
 
-`git clone https://github.com/Ghost-xDD/FileFusion.git`
+`git clone https://github.com/Ghost-xDD/DegenPigeon.git`
 
 ### Navigate to the project directory
 
-`cd FileFusion`
+`cd DegenPigeon`
 
 ### Install dependencies
 

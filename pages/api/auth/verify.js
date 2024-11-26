@@ -22,6 +22,7 @@ export default function handler(req, res) {
         message,
         signature,
       });
+      console.debug(address, validatedSignature);
       if (!validatedSignature.isValid) throw new Error('Invalid signature.');
     } else {
       const validatedSignature = identity.validatePolkadotWalletSignature({
@@ -29,6 +30,7 @@ export default function handler(req, res) {
         message,
         signature,
       });
+      console.debug(address, validatedSignature);
       if (!validatedSignature.isValid) throw new Error('Invalid signature.');
     }
 
