@@ -41,6 +41,21 @@ input {
   @apply bg-brown rounded-lg h-8 px-4 py-2 text-xs text-white placeholder:text-text-dark;
 }
 
+table {
+  thead {
+    @apply border border-brown;
+  }
+  tbody {
+    @apply border border-border;
+  }
+  th {
+    @apply bg-brown py-1;
+  }
+  td {
+    @apply p-1 border-t border-border;
+  }
+}
+
 .button-primary {
   @apply min-h-9 px-6 py-2  bg-brown-light cursor-pointer transition-colors duration-300 text-sm font-semibold text-text-dark rounded-lg;
 }
@@ -91,4 +106,36 @@ input {
 .modal-content {
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
+}
+
+/** Spinner */
+.spinner {
+  animation: rotate 2s linear infinite;
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: none;
+}
+.path {
+  stroke-dasharray: 8, 10;
+  animation: dash 8s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dashoffset: -124;
+  }
 }

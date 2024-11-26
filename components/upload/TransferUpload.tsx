@@ -1,24 +1,26 @@
 import React, { useState, useRef } from 'react';
-import Image from 'next/image';
 import { FileUploader } from 'react-drag-drop-files';
 import { useAuth } from '@/context/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 import SuccessModal from '../modals/SuccessModal';
 import helpers from '@/utils/helpers';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+
+import { useAccount } from 'wagmi';
+import ModalConnect from '../modals/ModalConnect';
 
 const TransferUploadCard: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, walletAddress } = useAuth();
+  const { address: ethAddress } = useAccount();
+
   const [file, setFile] = useState<File | null>(null);
-  const [recipientEmail, setRecipientEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showModalConnect, setShowModalConnect] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { openConnectModal } = useConnectModal();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
     }
@@ -29,8 +31,8 @@ const TransferUploadCard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isAuthenticated && openConnectModal) {
-      openConnectModal();
+    if (!isAuthenticated && !showModalConnect) {
+      setShowModalConnect(true);
       return;
     }
 
@@ -52,6 +54,7 @@ const TransferUploadCard: React.FC = () => {
           fileName: file.name,
           contentType: file.type,
           content: base64Content,
+          walletAddress: ethAddress || walletAddress,
         }),
       });
 
@@ -88,12 +91,12 @@ const TransferUploadCard: React.FC = () => {
   };
 
   return (
-    <div className=''>
+    <>
       <form className='space-y-4' onSubmit={handleSubmit}>
         <div className='space-y-1'>
           <FileUploader handleChange={handleChange} name='file'>
-            <div className='relative w-full p-4 pb-8 text-center text-grey dashed-border'>
-              <Image
+            <div className='relative block w-full p-4 pb-8 text-center text-grey dashed-border'>
+              <img
                 src='/images/cloud-add.svg'
                 alt='Degen pigeon upload'
                 width={39}
@@ -103,9 +106,7 @@ const TransferUploadCard: React.FC = () => {
               {file ? (
                 <strong className='text-[13px]'>{file.name}</strong>
               ) : (
-                <span className='text-[13px] font-normal'>
-                  Drag & drop a file to upload.
-                </span>
+                <span className='text-[13px] font-normal'>Drag & drop a file to upload.</span>
               )}
             </div>
           </FileUploader>
@@ -124,7 +125,7 @@ const TransferUploadCard: React.FC = () => {
         </div>
 
         <div className='space-y-1'>
-          <label className=''>Enter the mail</label>
+          <label>Enter the mail</label>
           <input
             type='email'
             className='w-full'
@@ -134,16 +135,13 @@ const TransferUploadCard: React.FC = () => {
           />
         </div>
 
-        <button
-          type='submit'
-          className={`button-primary w-full`}
-          disabled={loading}
-        >
+        <button type='submit' className={`button-primary w-full`} disabled={loading}>
           {loading ? <ClipLoader color='white' size={20} /> : 'Transfer'}
         </button>
       </form>
       <SuccessModal isOpen={showModal} onClose={() => setShowModal(false)} />
-    </div>
+      <ModalConnect isOpen={showModalConnect} onClose={() => setShowModalConnect(false)} />
+    </>
   );
 };
 
