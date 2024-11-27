@@ -17,6 +17,7 @@ export default function handler(req, res) {
     }
 
     const identity = new Identity();
+    console.log({ address, message, signature });
 
     if (address.startsWith('0x')) {
       const validatedSignature = identity.validateEvmWalletSignature({
@@ -25,7 +26,9 @@ export default function handler(req, res) {
         signature,
       });
       console.debug(address, validatedSignature);
-      if (!validatedSignature.isValid) throw new Error('Invalid signature.');
+      if (!validatedSignature.isValid) {
+        return res.status(400).json({ error: 'Invalid EVM wallet signature.' });
+      }
     } else {
       const validatedSignature = identity.validatePolkadotWalletSignature({
         walletAddress: address,
@@ -33,7 +36,9 @@ export default function handler(req, res) {
         signature,
       });
       console.debug(address, validatedSignature);
-      if (!validatedSignature.isValid) throw new Error('Invalid signature.');
+      if (!validatedSignature.isValid) {
+        return res.status(400).json({ error: 'Invalid Polkadot wallet signature.' });
+      }
     }
 
     // Replace with real user validation logic
