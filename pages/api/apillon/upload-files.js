@@ -39,26 +39,22 @@ export default async function handler(req, res) {
       const response = await bucket.uploadFiles(
         [
           {
-            fileName: fileName,
-            contentType: contentType,
+            fileName,
+            contentType,
             content: bufferContent,
           },
         ],
-        { wrapWithDirectory: true, directoryPath, awaitCid: true }
+        { directoryPath }
       );
       const responseData = response[0];
+      console.log({responseData});
 
       if (!responseData.fileName || !responseData.CID || !responseData.fileUuid) {
         return res.status(500).json({ error: 'Failed to upload files' });
       }
 
-      const ipfsLink = await storage.generateIpfsLink(responseData.CID);
 
-      if (!ipfsLink) {
-        return res.status(500).json({ error: 'Failed to generate IPFS link' });
-      }
-
-      res.status(200).json({ ipfs_url: ipfsLink });
+      res.status(200).json({ ipfs_url: responseData.url });
     } catch (error) {
       console.error('Error uploading files:', error);
       res.status(500).json({ error: 'Internal Server Error' });

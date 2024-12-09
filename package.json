@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@apillon/sdk": "^3.3.0",
+    "@apillon/sdk": "3.7.0-beta.0",
     "@headlessui/react": "^2.0.4",
     "@polkadot/extension-dapp": "^0.56.2",
     "@rainbow-me/rainbowkit": "^2.1.7",

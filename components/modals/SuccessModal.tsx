@@ -20,7 +20,7 @@ function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
             Congratulations!! Your file has been sent
           </DialogTitle>
           <Description className='text-gray-400'>
-            Recipient would receive an email to access the file
+            The recipient will receive an email to access the file
           </Description>
           <div className='flex justify-center cursor-pointer'>
             <button
