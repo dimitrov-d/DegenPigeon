@@ -72,7 +72,7 @@ const Transfers: React.FC = () => {
       <div className='p-4'>
         <h2 className='text-md font-bold text-grey text-center'>File storage and history</h2>
 
-        <div className='mt-8 max-h-[70dvh] overflow-auto'>
+        <div className='mt-4 max-h-[70dvh] overflow-auto'>
           {loading && (
             <div className='flex justify-center items-center'>
               <div className='flex items-center'>
@@ -106,7 +106,7 @@ const Transfers: React.FC = () => {
           {!loading &&
             userFiles.length > 0 &&
             Object.keys(groupedFiles).map((month) => (
-              <div key={month}>
+              <div key={month} className='mt-4'>
                 <h3 className='text-xs font-bold text-grey'>{month}</h3>
                 {groupedFiles[month].map((file) => (
                   <FileCard
