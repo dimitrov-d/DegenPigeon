@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 const Footer = () => {
-  const { setIsDocumentation } = useAuth();
+  const { isDocumentation, setIsDocumentation } = useAuth();
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -12,9 +12,15 @@ const Footer = () => {
           <strong>degenpigeon.com © 2024</strong>
         </div>
         <div className='text-[10px]'>
-          <span className='cursor-pointer' onClick={() => setIsDocumentation(true)}>
-            How does it work? Decentralization
-          </span>
+          {isDocumentation ? (
+            <span className='cursor-pointer' onClick={() => setIsDocumentation(false)}>
+              Close documentation
+            </span>
+          ) : (
+            <span className='cursor-pointer' onClick={() => setIsDocumentation(true)}>
+              How does it work? Decentralization
+            </span>
+          )}
         </div>
       </div>
     </div>

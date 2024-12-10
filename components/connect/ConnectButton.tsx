@@ -56,7 +56,7 @@ const ConnectButton = ({ center, ...attrs }: Props) => {
         </button>
       ) : (
         <button className={`button-primary h-12 min-w-80 ${attrs.className}`} onClick={() => setShowModal(true)}>
-          Connect
+          Login with wallet
         </button>
       )}
       {!isAuthenticated && <ModalWallet isOpen={showModal} center={center} onClose={() => setShowModal(false)} />}

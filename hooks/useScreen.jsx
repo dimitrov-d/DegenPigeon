@@ -5,14 +5,13 @@ const breakpoints = {
   sm: 640,
   md: 768,
   lg: 1024,
-  xl: 1440,
+  xl: 1280,
+  xxl: 1440,
   hd: 1920,
 };
 
 const useScreen = () => {
-  const [width, setWidth] = useState(
-    typeof window !== 'undefined' ? window?.innerWidth : 1920
-  );
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window?.innerWidth : 1920);
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,6 +34,7 @@ const useScreen = () => {
     isMd: greater('md'),
     isLg: greater('lg'),
     isXl: greater('xl'),
+    isXxl: greater('xxl'),
     isHd: greater('hd'),
   };
 };
