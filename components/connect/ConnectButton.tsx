@@ -45,6 +45,10 @@ const ConnectButton = ({ center, ...attrs }: Props) => {
     })();
   }, [signature]);
 
+  useEffect(() => {
+    console.debug('wallet address', walletAddress);
+  }, [walletAddress]);
+
   return (
     <>
       {isAuthenticated && (walletAddress || address) ? (
