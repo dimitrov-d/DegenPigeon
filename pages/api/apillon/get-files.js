@@ -36,9 +36,11 @@ export default async function handler(req, res) {
 
     try {
       const data = await bucket.listObjects({
-        limit: 10000,
+        limit: 10_000,
         search: directoryPath.trim()
       });
+      // files only
+      data.items = data.items.filter((item) => item.type === 2);
 
       res.status(200).json({ data });
     } catch (error) {
